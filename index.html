@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO CLASSIC - Home</title>
+
+    <!-- Ikon Font Awesome untuk elemen visual -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Montserrat & Poppins untuk tipografi mewah -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" href="./img/Logo.png" type="image/png">
+
+
+    <style>
+        /* ==========================================================================
+           KONFIGURASI VARIABLE & DASAR (LUXURY STYLE)
+           ========================================================================== */
+        :root {
+            --uno-red: #ff3b3b;
+            --uno-yellow: #ffcc00;
+            --uno-blue: #3b3bff;
+            --uno-green: #38b000;
+            --uno-black: #000000;
+            --uno-dark: #080808;
+            --ease-premium: cubic-bezier(0.23, 1, 0.32, 1);
+            --transition-slow: all 0.8s var(--ease-premium);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--uno-black);
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Scrollbar Premium */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--uno-red);
+        }
+
+        /* ==========================================================================
+           NAVBAR & SIDE MENU
+           ========================================================================== */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 90px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-logo img {
+            height: 150px;
+            transition: var(--transition-slow);
+        }
+
+        .nav-logo img:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .menu-btn {
+            cursor: pointer;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            transition: var(--transition-slow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+
+        /* SIDE MENU (Slide In) */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 380px;
+            height: 100vh;
+            background: #050505;
+            z-index: 1002;
+            transition: 0.8s var(--ease-premium);
+            padding: 50px 40px;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .side-menu-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+        }
+
+        .side-menu-header img {
+            height: 200px;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #444;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--uno-red);
+        }
+
+        .menu-links {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .menu-links li {
+            margin-bottom: 25px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: 0.5s var(--ease-premium);
+        }
+
+        .side-menu.active li {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .menu-links a {
+            text-decoration: none;
+            color: #888;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .menu-links a:hover {
+            color: #fff;
+            padding-left: 10px;
+        }
+
+        /* Language Switcher */
+        .lang-switch {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #111;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Lang switch khusus navbar */
+        .nav-lang {
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .lang-icon {
+            width: 35px;
+            height: 25px;
+            cursor: pointer;
+            object-fit: cover;
+            border-radius: 4px;
+            opacity: 0.5;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .lang-icon.active {
+            opacity: 1;
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1001;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .bgm-control {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #111;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bgm-control button {
+            background: none;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .bgm-control input[type="range"] {
+            flex: 1;
+        }
+
+        .bgm-control span {
+            font-size: 0.8rem;
+            color: #aaa;
+            width: 40px;
+            text-align: right;
+        }
+
+        /* MICRO INTERACTION – AMAN */
+        .bgm-control button {
+            transition:
+                background-color 0.25s ease,
+                border-color 0.25s ease,
+                color 0.25s ease,
+                transform 0.15s ease;
+        }
+
+        .bgm-control button:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .bgm-control button:active {
+            transform: scale(0.95);
+        }
+
+        /* RANGE – HALUS TANPA NGUBAH BENTUK */
+        .bgm-control input[type="range"] {
+            transition: opacity 0.2s ease;
+        }
+
+        .bgm-control input[type="range"]:hover {
+            opacity: 0.9;
+        }
+
+        /* ANGKA PERSEN – HIDUP DIKIT */
+        .bgm-control span {
+            transition: color 0.25s ease;
+        }
+
+        .bgm-control:hover span {
+            color: #fff;
+        }
+
+        /* ==========================================================================
+           SECTION 1: HERO
+           ========================================================================== */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 8.5rem);
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, var(--uno-red), var(--uno-yellow), var(--uno-blue), var(--uno-green), var(--uno-red));
+            background-size: 400% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 12s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.05));
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: 400% center;
+            }
+        }
+
+        .hero-tagline {
+            font-size: 1.1rem;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .btn-play {
+            padding: 22px 65px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-play:hover {
+            background: var(--uno-red);
+            border-color: var(--uno-red);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(255, 59, 59, 0.3);
+        }
+
+        /* Floating Cards Animation */
+        .ambient-card {
+            position: absolute;
+            width: clamp(80px, 15vw, 140px);
+            height: auto;
+            aspect-ratio: 1080/1920;
+            border-radius: 15px;
+            opacity: 0.15;
+            z-index: 0;
+            animation: float 12s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-40px) rotate(10deg);
+            }
+        }
+
+        /* Dekorasi Kartu CSS High Quality */
+        .about-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            min-width: 320px;
+            perspective: 1000px;
+        }
+
+        .premium-card {
+            width: clamp(180px, 40vw, 240px);
+            height: clamp(270px, 60vw, 360px);
+            background: var(--uno-blue);
+            border: 12px solid white;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(3.5rem, 8vw, 6rem);
+            font-weight: 800;
+            position: relative;
+            box-shadow: 20px 20px 0 var(--uno-red), 40px 40px 0 var(--uno-green);
+            transition: var(--transition);
+            transition-property: transform, box-shadow;
+            transition-duration: 0.8s;
+            transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+            filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+        }
+
+        .premium-card:hover {
+            transform: rotate(-5deg) scale(1.05);
+            box-shadow: 25px 25px 50px rgba(0, 0, 0, 0.5);
+            filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.4));
+        }
+
+        /* Jaga area visual di layar kecil */
+        @media (max-width: 480px) {
+            .about-visual {
+                min-width: unset;
+                margin-top: 40px;
+            }
+
+            .premium-card {
+                transform-origin: center;
+            }
+        }
+
+        /* Tablet & mobile besar */
+        @media (max-width: 768px) {
+            .premium-card:hover {
+                transform: rotate(-3deg) scale(1.04);
+            }
+        }
+
+        /* Layar super besar (4K / ultrawide) */
+        @media (min-width: 1600px) {
+            .premium-card {
+                box-shadow:
+                    24px 24px 0 var(--uno-red),
+                    48px 48px 0 var(--uno-green);
+            }
+        }
+
+        /* ==========================================================================
+           LAYOUT & SECTION STYLES
+           ========================================================================== */
+        .section {
+            padding: 140px 10%;
+            padding: clamp(80px, 10vh, 140px) clamp(20px, 5%, 10%);
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        /* VS BOT SECTION - RESPONSIVE */
+        .bot-box {
+            background: #060606;
+            border: 1px solid #111;
+            border-radius: 20px;
+            padding: clamp(30px, 6vw, 80px);
+            display: flex;
+            align-items: center;
+            gap: clamp(30px, 6vw, 80px);
+            flex-wrap: wrap;
+        }
+
+        /* Icon */
+        .bot-icon {
+            flex: 1 1 200px;
+            font-size: clamp(4rem, 10vw, 8rem);
+            color: var(--uno-blue);
+            text-align: center;
+            filter: drop-shadow(0 0 30px rgba(59, 59, 255, 0.2));
+        }
+
+        /* Text */
+        .bot-info {
+            flex: 2 1 300px;
+            min-width: 0;
+            /* penting biar gak overflow */
+        }
+
+        .bot-info h3 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 20px;
+            color: var(--uno-blue);
+        }
+
+        /* SPECIAL CARDS (CSS SEMI-3D) */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+            max-width: 600px;
+            /* Memaksa tampilan 2 baris (shaf) di layar besar */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .special-card-wrapper {
+            position: relative;
+            width: clamp(90px, 28vw, 160px);
+            /* Ukuran responsif kecil */
+            aspect-ratio: 1080/1920;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            transition: var(--transition-slow);
+            cursor: pointer;
+        }
+
+        .special-card-wrapper:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        .uno-card {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .special-card-info {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .special-card-wrapper:hover .special-card-info {
+            opacity: 1;
+        }
+
+        .special-card-info h4 {
+            color: var(--uno-yellow);
+            font-weight: 900;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .special-card-info p {
+            font-size: 0.7rem;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .how-to-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: clamp(20px, 4vw, 40px);
+            margin-top: 60px;
+        }
+
+        .rule-card {
+            background: #0c0c0c;
+            padding: 50px 40px;
+            padding: clamp(30px, 5vw, 50px) clamp(25px, 4vw, 40px);
+            border-radius: 2px;
+            text-align: left;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+        }
+
+        .rule-card:hover {
+            background: #121212;
+            transform: translateY(-10px);
+            border-color: var(--uno-green);
+        }
+
+        .rule-card i {
+            font-size: 2.5rem;
+            color: var(--uno-green);
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .rule-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .rule-card p {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        /* ==========================================================================
+           RATING & COMMENTS (BUBBLE CHAT STYLE)
+           ========================================================================== */
+        .comments-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            gap: clamp(25px, 4vw, 40px);
+        }
+
+        .bubble {
+            background: #0a0a0a;
+            padding: 30px 40px;
+            padding: clamp(20px, 4vw, 30px) clamp(25px, 5vw, 40px);
+            border-radius: 25px;
+            border: 1px solid #111;
+            max-width: 70%;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .bubble:hover {
+            border-color: #333;
+            transform: scale(1.02);
+        }
+
+        .bubble.left {
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .bubble.right {
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+            background: #111;
+        }
+
+        .bubble-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .bubble-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .bubble-rating {
+            color: var(--uno-yellow);
+            font-size: 0.8rem;
+        }
+
+        .bubble-text {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        .bubble-reactions {
+            margin-top: 12px;
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .bubble.right .bubble-reactions {
+            justify-content: flex-end;
+        }
+
+        .reaction-item {
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .reaction-item:hover {
+            color: var(--uno-red);
+            transform: scale(1.1);
+        }
+
+        /* ==========================================================================
+           TEAM & FOOTER
+           ========================================================================== */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(10px, 3vw, 30px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .dev-card {
+            background: #080808;
+            padding: clamp(15px, 3vw, 40px);
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #111;
+            transition: 0.5s;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dev-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--uno-red);
+            z-index: 10;
+        }
+
+        .dev-img {
+            width: clamp(80px, 12vw, 140px);
+            height: clamp(80px, 12vw, 140px);
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 4px solid #151515;
+        }
+
+        .dev-card h3 {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            margin-bottom: 5px;
+        }
+
+        .dev-card p {
+            font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .instagram-icon {
+            display: inline-block;
+            margin-top: auto;
+            font-size: 22px;
+            color: #fff;
+            /* Warna icon */
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .instagram-icon:hover {
+            transform: scale(1.2);
+            color: var(--uno-red);
+            /* Warna tema UNO */
+        }
+
+        /* CTA ANIMATION */
+        .cta-section {
+            text-align: center;
+            background: linear-gradient(-45deg, #000, #1a1a1a, #050505, #222);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        footer {
+            padding: 100px 10% 40px;
+            border-top: 1px solid #111;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+        }
+
+        .footer-logo img {
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: #333;
+            font-size: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #fff;
+            transform: translateY(-5px);
+        }
+
+        .footer-col h4 {
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: #444;
+            text-decoration: none;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid #111;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        /* ==========================================================================
+   RESPONSIVE GLOBAL (ALL DEVICE SAFE)
+   ========================================================================== */
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ------------------ EXTRA SMALL DEVICES (≤480px) ------------------ */
+        @media (max-width: 480px) {
+
+            nav {
+                padding: 0 16px;
+                height: 70px;
+            }
+
+            .nav-logo img {
+                height: 110px;
+            }
+
+            .nav-controls {
+                gap: 12px;
+            }
+
+            .lang-icon {
+                width: 30px;
+                height: 22px;
+            }
+
+            .menu-btn {
+                padding: 8px 14px;
+            }
+
+            .bot-box {
+                padding: 24px;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+            footer {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+
+            .side-menu {
+                width: 100%;
+            }
+        }
+
+        /* ------------------ MOBILE & TABLET (≤768px) ------------------ */
+        @media (max-width: 768px) {
+
+            nav {
+                padding: 0 20px;
+            }
+
+            .nav-controls {
+                gap: 16px;
+            }
+
+            .bot-box {
+                padding: 32px;
+            }
+
+            footer {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .side-menu {
+                width: 100%;
+            }
+
+            .bubble {
+                max-width: 90%;
+            }
+        }
+
+        /* ------------------ SMALL LAPTOP (≤992px) ------------------ */
+        @media (max-width: 992px) {
+
+            footer {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-box {
+                padding: 40px;
+                text-align: center;
+            }
+        }
+
+        /* ------------------ LAPTOP & PC (≥1024px) ------------------ */
+        @media (min-width: 1024px) {
+            .team-grid {
+                grid-template-columns: repeat(4, 1fr);
+                max-width: 100%;
+            }
+        }
+
+        /* ------------------ DESKTOP (≥1200px) ------------------ */
+        @media (min-width: 1200px) {
+
+            .container,
+            section {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            footer {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+
+        /* ------------------ ULTRA WIDE (≥1600px) ------------------ */
+        @media (min-width: 1600px) {
+
+            .container,
+            section {
+                max-width: 1400px;
+            }
+
+            .bot-box {
+                padding: 60px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- OVERLAY LAYAR -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- NAVBAR UTAMA -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <img src="./img/Logo.png" alt="UNO Logo">
+        </a>
+
+        <!-- Right Controls -->
+        <div class="nav-controls">
+            <div class="lang-switch nav-lang">
+                <img src="https://flagcdn.com/w80/id.png" class="lang-icon active" onclick="switchLang('id')"
+                    id="flag-id">
+
+                <img src="https://flagcdn.com/w80/gb.png" class="lang-icon" onclick="switchLang('en')" id="flag-en">
+            </div>
+
+            <div class="menu-btn" id="openMenu">
+                <i class="fas fa-bars-staggered"></i>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- SIDE MENU (NAVBAR-NAV) -->
+    <aside class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <img src="./img/Logo.png" alt="Logo">
+            <div class="close-btn" id="closeMenu"><i class="fas fa-times"></i></div>
+        </div>
+        <ul class="menu-links">
+            <li><a href="#home" data-key="nav_home">Home</a></li>
+            <li><a href="#about" data-key="nav_about">About</a></li>
+            <li><a href="#bot" data-key="nav_bot">VS Computer</a></li>
+            <li><a href="#special" data-key="nav_special">Special Cards</a></li>
+            <li><a href="#rating" data-key="nav_rating">Players</a></li>
+        </ul>
+        <!-- BACKSOUND CONTROL -->
+        <div class="bgm-control">
+            <button id="bgmToggle">🔊</button>
+            <input type="range" id="bgmVolume" min="0" max="100" value="50">
+            <span id="bgmValue">50%</span>
+        </div>
+
+        <audio id="bgm" src="./music/WhatsApp Audio 2026-01-10 at 11.48.08 PM.mpeg" loop></audio>
+    </aside>
+
+    <!-- SECTION 1: HERO -->
+    <section class="hero" id="home">
+        <!-- Elemen Kartu Dekoratif -->
+        <img src="./img/UNO/1 MERAH.png" class="ambient-card" style="top:15%; left:10%; animation-delay:0s;">
+        <img src="./img/UNO/1 IJO.png" class="ambient-card" style="top:15%; left:90%; animation-delay:-9s;">
+        <img src="./img/UNO/1 BIRU.png" class="ambient-card" style="bottom:15%; right:15%; animation-delay:-3s;">
+        <img src="./img/UNO/1 KUNING.png" class="ambient-card" style="top:60%; left:5%; animation-delay:-6s;">
+
+        <h1 id="heroTitle">UNO CLASSIC</h1>
+        <p class="hero-tagline" data-key="hero_tagline">KLASIK NAMUN ASIK</p>
+        <button class="btn-play" data-key="btn_play" onclick="window.location.href='./difficulty.html'">MAINKAN
+            SEKARANG</button>
+    </section>
+
+    <!-- SECTION 2: ABOUT -->
+    <section class="section" id="about">
+        <h2 class="section-title" data-key="about_title">The New Era of UNO</h2>
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <p style="color: #888; font-size: 1.2rem; line-height: 2;" data-key="about_desc">
+                Kami membawa kegembiraan kartu fisik ke dunia digital dengan performa tanpa kompromi.
+                Tanpa instalasi, tanpa hambatan, hanya kesenangan murni di browser Anda.
+            </p>
+        </div>
+        <br>
+        <!-- Visual Kartu Premium Berbasis CSS -->
+        <div class="about-visual">
+            <div class="premium-card">7</div>
+        </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: HOW TO PLAY -->
+    <section class="section" id="rules">
+        <h2 class="section-title">Cara Bermain</h2>
+        <div class="how-to-grid">
+            <!-- Aturan 1 -->
+            <div class="rule-card">
+                <i class="fas fa-layer-group"></i>
+                <h3 data-key="match_card">Cocokkan Kartu</h3>
+                <p data-key="tutorial1">Keluarkan kartu yang memiliki warna, angka, atau simbol yang sama dengan kartu
+                    di tumpukan.</p>
+            </div>
+            <!-- Aturan 2 -->
+            <div class="rule-card">
+                <i class="fas fa-bolt"></i>
+                <h3 data-key="action_cards">Kartu Aksi</h3>
+                <p data-key="tutorial2">Gunakan Skip, Reverse, +2, Wild, dan +4 untuk menghalangi lawan dan memenangkan
+                    permainan.</p>
+            </div>
+            <!-- Aturan 3 -->
+            <div class="rule-card">
+                <i class="fas fa-bullhorn"></i>
+                <h3 data-key="shout_uno">Teriak "UNO!"</h3>
+                <p data-key="tutorial3">Wajib berteriak "UNO!" saat kartu di tangan Anda tersisa tepat satu, atau Anda
+                    akan dihukum!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: VS COMPUTER (BOT) -->
+    <section class="section" id="bot">
+        <div class="bot-box">
+            <div class="bot-icon"><i class="fas fa-robot"></i></div>
+            <div class="bot-info">
+                <h3 data-key="bot_title">Vanquish The AI</h3>
+                <p style="color:#666; margin-bottom: 20px;" data-key="bot_desc">Tidak punya teman? Sistem AI cerdas kami
+                    siap menantang setiap langkah strategis Anda. Berlatih solo dan jadilah master UNO.</p>
+                <div style="display: flex; gap: 20px;">
+                    <span style="color:var(--uno-blue)"><i class="fas fa-check"></i> Smart Logic</span>
+                    <span style="color:var(--uno-blue)"><i class="fas fa-check"></i> Fast Response</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: SPECIAL CARDS -->
+    <section class="section" id="special">
+        <h2 class="section-title" data-key="special_title">Special Action Cards</h2>
+        <div class="cards-grid">
+            <div class="special-card-wrapper">
+                <img src="./img/UNO/block MERAH.png" class="uno-card" alt="Skip">
+                <div class="special-card-info">
+                    <h4>SKIP</h4>
+                    <p data-key="desc_skip">Melewati giliran pemain berikutnya.</p>
+                </div>
+            </div>
+            <div class="special-card-wrapper">
+                <img src="./img/UNO/reverse BIRU.png" class="uno-card" alt="Reverse">
+                <div class="special-card-info">
+                    <h4>REVERSE</h4>
+                    <p data-key="desc_reverse">Membalikkan arah putaran permainan.</p>
+                </div>
+            </div>
+            <div class="special-card-wrapper">
+                <img src="./img/UNO/67 HITAM.png" class="uno-card" alt="67">
+                <div class="special-card-info">
+                    <h4>67</h4>
+                    <p data-key="desc_67">Kartu dibagikan secara acak, dengan kemungkinan pemain menerima 6 kartu dan
+                        komputer 7 kartu, atau sebaliknya.</p>
+                </div>
+            </div>
+            <div class="special-card-wrapper">
+                <img src="./img/UNO/+2 IJO.png" class="uno-card" alt="Draw Two">
+                <div class="special-card-info">
+                    <h4>DRAW 2</h4>
+                    <p data-key="desc_draw2">Lawan wajib mengambil 2 kartu.</p>
+                </div>
+            </div>
+            <div class="special-card-wrapper">
+                <img src="./img/UNO/change color HITAM.png" class="uno-card" alt="Wild">
+                <div class="special-card-info">
+                    <h4>WILD</h4>
+                    <p data-key="desc_wild">Bebas mengganti warna permainan.</p>
+                </div>
+            </div>
+            <div class="special-card-wrapper">
+                <img src="./img/UNO/+4 HITAM.png" class="uno-card" alt="Draw Four">
+                <div class="special-card-info">
+                    <h4>DRAW 4</h4>
+                    <p data-key="desc_draw4">Lawan ambil 4 kartu & ganti warna.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: RATING & COMMENTS -->
+    <section class="section" id="rating">
+        <h2 class="section-title" data-key="rating_title">Player Experience</h2>
+        <div class="comments-container">
+            <!-- Komentar 1 -->
+            <div class="bubble left reveal">
+                <div class="bubble-header">
+                    <span class="bubble-name">Anonymous</span>
+                    <div class="bubble-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                            class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        <span style="margin-left: 5px;">4.5</span>
+                    </div>
+                </div>
+                <p class="bubble-text" data-key="comment_1">"Gila sih, animasinya smooth banget buat game web. Berasa
+                    main aplikasi native."</p>
+                <div class="bubble-reactions">
+                    <span class="reaction-item">❤️ 67</span>
+                    <span class="reaction-item">👍 12</span>
+                </div>
+            </div>
+            <!-- Komentar 2 -->
+            <div class="bubble right reveal">
+                <div class="bubble-header">
+                    <span class="bubble-name">Anonymous</span>
+                    <div class="bubble-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                            class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <span style="margin-left: 5px;">5.0</span>
+                    </div>
+                </div>
+                <p class="bubble-text" data-key="comment_2">"Bot-nya lumayan pinter, ga asal jalan. Seru buat ngisi
+                    waktu luang pas lagi gabut."</p>
+                <div class="bubble-reactions">
+                    <span class="reaction-item">🔥 89</span>
+                    <span class="reaction-item">😂 23</span>
+                </div>
+            </div>
+            <!-- Komentar 3 -->
+            <div class="bubble left reveal">
+                <div class="bubble-header">
+                    <span class="bubble-name">Anonymous</span>
+                    <div class="bubble-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                            class="fas fa-star-half-alt"></i><i class="far fa-star"></i>
+                        <span style="margin-left: 5px;">3.5</span>
+                    </div>
+                </div>
+                <p class="bubble-text" data-key="comment_3">"Tampilannya mewah parah! Suka banget sama efek neon-nya.
+                    Ditunggu fitur multiplayer online-nya min!"</p>
+                <div class="bubble-reactions">
+                    <span class="reaction-item">❤️ 156</span>
+                    <span class="reaction-item">😮 42</span>
+                </div>
+            </div>
+            <!-- Komentar 4 -->
+            <div class="bubble right reveal">
+                <div class="bubble-header">
+                    <span class="bubble-name">Anonymous</span>
+                    <div class="bubble-rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                            class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        <span style="margin-left: 5px;">4.8</span>
+                    </div>
+                </div>
+                <p class="bubble-text" data-key="comment_4">"Main di HP lancar jaya, ga patah-patah. Tombolnya juga pas
+                    di jari. Good job dev!"</p>
+                <div class="bubble-reactions">
+                    <span class="reaction-item">👍 204</span>
+                    <span class="reaction-item">🚀 58</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: DEVELOPER -->
+    <section class="section" id="team">
+        <h2 class="section-title" data-key="team_title">The Creators</h2>
+        <div class="team-grid">
+            <div class="dev-card">
+                <img src="./img/faris.jpeg" alt="Dev" class="dev-img">
+                <h3>Faris Bagas Adhynata</h3>
+                <p style="color: #444;">Graphic Designer (UNO Cards)</p>
+                <a href="https://www.instagram.com/farisssx11/?__pwa=1" target="_blank" class="instagram-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <div class="dev-card">
+                <img src="./img/radith.jpeg" alt="Dev" class="dev-img">
+                <h3>Radithya Putra Pratama</h3>
+                <p style="color: #444;">Programmer</p>
+                <a href="https://www.instagram.com/raddyypp/?__pwa=1" target="_blank" class="instagram-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <div class="dev-card">
+                <img src="./img/tristan.jpeg" alt="Dev" class="dev-img">
+                <h3>Gabriel Tristan Novarro</h3>
+                <p style="color: #444;">Creative Planner</p>
+                <a href="https://www.instagram.com/gabrieltristan89/?__pwa=1" target="_blank" class="instagram-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <div class="dev-card">
+                <img src="./img/otniel.jpeg" alt="Dev" class="dev-img">
+                <h3>Otniel Benaya Saor Simamora</h3>
+                <p style="color: #444;">Creative Planner</p>
+                <a href="https://www.instagram.com/otni.el26/?__pwa=1" target="_blank" class="instagram-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7: CTA -->
+    <section class="section cta-section">
+        <h2 style="font-size: clamp(2rem, 8vw, 4rem); font-family: 'Montserrat'; margin-bottom: 30px; line-height: 1.1;"
+            data-key="cta_title">WAKTUNYA
+            UCAPKAN UNO!</h2>
+        <button class="btn-play" data-key="btn_play" onclick="window.location.href='./difficulty.html'"
+            style="padding: 22px clamp(20px, 6vw, 65px); max-width: 100%;">MAINKAN
+            SEKARANG</button>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-col">
+            <div class="footer-logo"><img src="./img/Logo.png" alt="Footer Logo"></div>
+            <p style="color: #333; font-size: 0.9rem;">Elevating classic card games into the digital age with premium
+                design and smooth performance.</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/raddyypp?igsh=MTR1Mm5haHNkdHZpcw=="><i
+                        class="fab fa-instagram"></i></a>
+                <a href="https://discord.gg/smkbWdJyyM"><i class="fab fa-discord"></i></a>
+                <a href="#"><i class="fab fa-x-twitter"></i></a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4 data-key="footer_company">Company</h4>
+            <a href="#">About Us</a>
+            <a href="#">Career</a>
+            <a href="#">Press Kit</a>
+        </div>
+        <div class="footer-col">
+            <h4 data-key="footer_support">Support</h4>
+            <a href="mailto:raddstudio40@gmail.com">Contact Us</a>
+            <a href="#">Terms & Conditions</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+    </footer>
+
+    <div class="copyright">
+        © 2026 ROFT Studios. All rights reserved.
+    </div>
+
+    <!-- JAVASCRIPT: INTERAKSI & MULTI LANGUAGE -->
+    <script>
+
+        const bgm = document.getElementById("bgm");
+        const toggleBtn = document.getElementById("bgmToggle");
+        const volumeSlider = document.getElementById("bgmVolume");
+        const volumeValue = document.getElementById("bgmValue");
+
+        // === LOAD STATE ===
+        const savedVolume = localStorage.getItem("bgmVolume");
+        const savedTime = localStorage.getItem("bgmTime");
+        const savedPlay = localStorage.getItem("bgmPlay");
+
+        // volume
+        bgm.volume = savedVolume !== null ? parseFloat(savedVolume) : 0.5;
+        volumeSlider.value = bgm.volume * 100;
+        volumeValue.textContent = `${volumeSlider.value}%`;
+
+        // WAIT AUDIO READY (INI PENTING)
+        bgm.addEventListener("loadedmetadata", () => {
+            if (savedTime) {
+                bgm.currentTime = parseFloat(savedTime);
+            }
+
+            if (savedPlay !== "false") {
+                bgm.play().catch(() => { });
+                toggleBtn.textContent = "🔊";
+            } else {
+                toggleBtn.textContent = "🔇";
+            }
+        });
+
+        // === TOGGLE PLAY ===
+        toggleBtn.onclick = () => {
+            if (bgm.paused) {
+                bgm.play().catch(() => { });
+                toggleBtn.textContent = "🔊";
+                localStorage.setItem("bgmPlay", "true");
+            } else {
+                bgm.pause();
+                toggleBtn.textContent = "🔇";
+                localStorage.setItem("bgmPlay", "false");
+            }
+        };
+
+        // === VOLUME CONTROL ===
+        volumeSlider.oninput = () => {
+            const vol = volumeSlider.value / 100;
+            bgm.volume = vol;
+            volumeValue.textContent = `${volumeSlider.value}%`;
+            localStorage.setItem("bgmVolume", vol);
+        };
+
+        // === SAVE TIME CONTINUOUSLY ===
+        setInterval(() => {
+            if (!bgm.paused) {
+                localStorage.setItem("bgmTime", bgm.currentTime);
+            }
+        }, 300);
+
+        // DATA BAHASA
+        const languages = {
+            id: {
+                nav_home: "Beranda", nav_about: "Tentang", nav_bot: "VS Komputer", nav_special: "Kartu Spesial", nav_rating: "Pemain",
+                hero_tagline: "KLASIK NAMUN ASIK", btn_play: "Mainkan Sekarang",
+                about_title: "Era Baru UNO", about_desc: "Kami membawa kegembiraan kartu fisik ke dunia digital dengan performa tanpa kompromi. Tanpa instalasi, hanya kesenangan murni.",
+                match_card: "Cocokkan Kartu",
+                tutorial1: "Keluarkan kartu yang memiliki warna, angka, atau simbol yang sama dengan kartu di tumpukan.",
+                action_cards: "Kartu Aksi",
+                tutorial2: "Gunakan Skip, Reverse, +2, Wild, dan +4 untuk menghalangi lawan dan memenangkan permainan.",
+                shout_uno: "Teriak UNO!",
+                tutorial3: "Wajib berteriak 'UNO' saat kartu di tangan Anda bersisa tepat satu, atau Anda akan dihukum!",
+                bot_title: "Kalahkan AI", bot_desc: "Tidak punya teman? Sistem AI cerdas kami siap menantang setiap langkah strategis Anda. Berlatih solo dan jadilah master UNO.",
+                special_title: "Kartu Aksi Spesial", rating_title: "Pengalaman Pemain",
+                desc_skip: "Melewati giliran pemain berikutnya.",
+                desc_reverse: "Membalikkan arah putaran permainan.",
+                desc_67: "Kartu dibagikan secara acak, dengan kemungkinan pemain menerima 6 kartu dan komputer 7 kartu, atau sebaliknya.",
+                desc_draw2: "Lawan wajib mengambil 2 kartu.",
+                desc_wild: "Bebas mengganti warna permainan.",
+                desc_draw4: "Lawan ambil 4 kartu & ganti warna.",
+                comment_1: "Gila sih, animasinya smooth banget buat game web. Berasa main aplikasi native.",
+                comment_2: "Bot-nya lumayan pinter, ga asal jalan. Seru buat ngisi waktu luang pas lagi gabut.",
+                comment_3: "Tampilannya mewah parah! Suka banget sama efek neon-nya. Ditunggu fitur multiplayer online-nya min!",
+                comment_4: "Main di HP lancar jaya, ga patah-patah. Tombolnya juga pas di jari. Good job dev!",
+                team_title: "Sang Pencipta", cta_title: "WAKTUNYA UCAPKAN UNO!",
+                footer_company: "Perusahaan", footer_support: "Bantuan"
+            },
+            en: {
+                nav_home: "Home", nav_about: "About", nav_bot: "VS Computer", nav_special: "Special Cards", nav_rating: "Players",
+                hero_tagline: "CLASSIC BUT FUN", btn_play: "Play Now",
+                about_title: "The New Era of UNO", about_desc: "We bring the joy of physical cards to the digital world with uncompromising performance. No installation, just pure fun.",
+                match_card: "Match Cards",
+                tutorial1: "Remove cards that have the same color, number, or symbol as the cards in the pile.",
+                action_cards: "Action Cards",
+                tutorial2: "Use Skip, Reverse, +2, Wild, and +4 to block opponents and win the game.",
+                shout_uno: "Shout UNO!",
+                tutorial3: "You must shout 'UNO' when you have exactly one card Left, or you will be penalized!",
+                bot_title: "Vanquish The AI", bot_desc: "No friends available? Our smart AI system is ready to challenge your every strategic move. Practice solo and become a master.",
+                special_title: "Special Action Cards", rating_title: "Player Experience",
+                desc_skip: "Skips the next player's turn.",
+                desc_reverse: "Reverses the direction of play.",
+                desc_67: "Cards are dealt randomly, with the player possibly receiving 6 cards and the computer 7, or vice versa.",
+                desc_draw2: "Opponent must draw 2 cards.",
+                desc_wild: "Change the color of play.",
+                desc_draw4: "Opponent draws 4 cards & change color.",
+                comment_1: "Crazy smooth animations for a web game. Feels like a native app.",
+                comment_2: "The bot is actually smart, not just random moves. Fun way to kill time.",
+                comment_3: "The visuals are luxurious! Love the neon effects. Waiting for online multiplayer!",
+                comment_4: "Runs perfectly on mobile, no lag. Buttons are well-placed. Good job dev!",
+                team_title: "The Creators", cta_title: "TIME TO SAY UNO!",
+                footer_company: "Company", footer_support: "Support"
+            }
+        };
+
+        // FUNGSI GANTI BAHASA
+        function switchLang(lang) {
+            // Ubah teks berdasarkan key
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (languages[lang][key]) el.innerText = languages[lang][key];
+            });
+
+            // Update UI Icon Bendera
+            document.querySelectorAll('.lang-icon').forEach(icon => icon.classList.remove('active'));
+            document.getElementById(`flag-${lang}`).classList.add('active');
+
+            // Simpan preferensi (opsional di memori saja untuk demo ini)
+            console.log("Bahasa diganti ke: " + lang);
+        }
+
+        // KONTROL SIDE MENU
+        const openBtn = document.getElementById('openMenu');
+        const closeBtn = document.getElementById('closeMenu');
+        const sideMenu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+
+        openBtn.addEventListener('click', () => {
+            sideMenu.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        const closeFunc = () => {
+            sideMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        closeBtn.addEventListener('click', closeFunc);
+        overlay.addEventListener('click', closeFunc);
+        document.querySelectorAll('.menu-links a').forEach(link => link.addEventListener('click', closeFunc));
+
+        // ANIMASI REVEAL SAAT SCROLL (MAHAL & HALUS)
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.section-title, .dev-card, .uno-card, .reveal, .bot-box').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 1s var(--ease-premium)';
+            revealObserver.observe(el);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Kalau file atau folder BENERAN ada, jangan diapa-apain
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Tambahin .html secara otomatis
+RewriteRule ^([^/]+)$ $1.html [L]

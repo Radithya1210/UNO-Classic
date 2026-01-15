@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
+    <title>UNO CLASSIC - EASY</title>
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="./img/Logo.png" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,900;1,900&family=Outfit:wght@300;400;600;800&display=swap');
+
+        :root {
+            --uno-gray: #e0e0e0;
+            --uno-border: #bcbcbc;
+            --uno-red: #d72600;
+            --uno-blue: #0063b1;
+            --uno-yellow: #f5b500;
+            --uno-green: #379711;
+            --uno-brown: #8b4513;
+            --card-width: 130px;
+            --card-height: 195px;
+            --transition-main: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            font-family: 'Outfit', sans-serif;
+            user-select: none;
+        }
+
+        /* --- MEJA PERMAINAN --- */
+        .table-surface {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            /* UNO Red Gradient Background */
+            background: radial-gradient(circle at center, #b91c1c 0%, #500a0a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        /* Pola Dot Halus */
+        .table-surface::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Strip Warna Kiri */
+        .table-surface::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 15px;
+            background: linear-gradient(to bottom, #ff5555 25%, #5555ff 25%, #5555ff 50%, #55aa55 50%, #55aa55 75%, #ffaa00 75%);
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 50;
+        }
+
+        /* Strip Warna Kanan */
+        .table-accent-right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 15px;
+            background: linear-gradient(to bottom, #ffaa00 25%, #55aa55 25%, #55aa55 50%, #5555ff 50%, #5555ff 75%, #ff5555 75%);
+            box-shadow: -2px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 50;
+        }
+
+        .uno-logo-bg {
+            position: absolute;
+            top: 50%;
+            right: 5%;
+            transform: translateY(-50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- KARTU --- */
+        .card {
+            width: var(--card-width);
+            height: var(--card-height);
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 4px solid #fff;
+            position: relative;
+            flex-shrink: 0;
+            background-color: #fff;
+            transition: var(--transition-main);
+        }
+
+        .player-hand .card {
+            cursor: pointer;
+            margin-left: -65px;
+        }
+
+        .player-hand .card:first-child {
+            margin-left: 0;
+        }
+
+        .player-hand .card:hover {
+            transform: translateY(-50px) scale(1.1) rotate(2deg);
+            z-index: 100 !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .bot-hand .card {
+            margin-left: -80px;
+        }
+
+        .bot-hand .card:first-child {
+            margin-left: 0;
+        }
+
+        /* --- STACK AREA --- */
+        .center-pile {
+            display: flex;
+            align-items: center;
+            z-index: 10;
+            width: 100%;
+            justify-content: center;
+            position: relative;
+        }
+
+        .draw-stack {
+            position: absolute;
+            left: 10%;
+            width: var(--card-width);
+            height: var(--card-height);
+            cursor: pointer;
+        }
+
+        /* Visual tumpukan 108 kartu nyata */
+        .draw-stack-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #222;
+            border-radius: 12px;
+            border: 1px solid #444;
+            /* Efek Tumpukan Kartu Realistis */
+            box-shadow:
+                1px 1px 0 #eee, 2px 2px 0 #333,
+                3px 3px 0 #eee, 4px 4px 0 #333,
+                5px 5px 0 #eee, 6px 6px 0 #333,
+                7px 7px 0 #eee, 8px 8px 0 #111,
+                10px 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .discard-stack {
+            position: relative;
+            width: var(--card-width);
+            height: var(--card-height);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .discard-stack .card {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* --- NOTIFIKASI --- */
+        .uno-toast {
+            position: fixed;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+
+            /* Glassmorphism & Luxury Base */
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+
+            /* Typography */
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-style: italic;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+
+            /* Shape & Spacing */
+            padding: 15px 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 320px;
+            justify-content: center;
+
+            /* Borders & Shadows */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+            z-index: 2000;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow: hidden;
+        }
+
+        /* Glowing Accent Bar at Bottom */
+        .uno-toast::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: currentColor;
+            box-shadow: 0 -2px 12px currentColor;
+            opacity: 0.8;
+        }
+
+        .uno-toast img {
+            width: 50px;
+            height: auto;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+        }
+
+        .uno-toast.active {
+            top: 30px;
+            transform: translateX(-50%) scale(1);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        /* VARIANTS (Neon Colors) */
+        .uno-toast.toast-penalty {
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+        }
+
+        .uno-toast.toast-turn {
+            color: #44ff44;
+            text-shadow: 0 0 20px rgba(68, 255, 68, 0.4);
+        }
+
+        .uno-toast.toast-success {
+            color: #00ffaa;
+            text-shadow: 0 0 20px rgba(0, 255, 170, 0.4);
+        }
+
+        .uno-toast.toast-uno {
+            color: #ffaa00;
+            text-shadow: 0 0 20px rgba(255, 170, 0, 0.4);
+        }
+
+        .uno-toast.toast-info {
+            color: #4488ff;
+            text-shadow: 0 0 20px rgba(68, 136, 255, 0.4);
+        }
+
+        /* --- UI OVERLAYS --- */
+        .screen-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            display: none;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .screen-overlay.active {
+            display: flex;
+        }
+
+        .pause-btn {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border: 4px solid #000;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            color: #000;
+        }
+
+        /* --- Notification History --- */
+        #history-log {
+            position: fixed;
+            top: -320px;
+            /* Sembunyikan konten di luar layar atas */
+            left: 20px;
+            z-index: 1500;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: top 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        #history-log.active {
+            top: 0;
+        }
+
+        .history-btn {
+            width: 50px;
+            height: 40px;
+            background: #fff;
+            border: 4px solid #000;
+            border-top: none;
+            border-radius: 0 0 25px 25px;
+            /* Bentuk setengah lingkaran bawah */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #000;
+            margin-left: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s;
+        }
+
+        .history-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        #history-content {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 15px;
+            width: 300px;
+            height: 320px;
+            /* Tinggi tetap untuk drawer */
+            overflow-y: auto;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #history-log.active .history-btn i {
+            transform: rotate(180deg);
+        }
+
+        .history-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item.new {
+            opacity: 1;
+            color: #fff;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            border-bottom: none;
+        }
+
+        .history-time {
+            font-size: 0.7rem;
+            color: #aaa;
+            margin-left: 10px;
+        }
+
+        .menu-card {
+            background: #fff;
+            color: #000;
+            padding: 40px;
+            border-radius: 20px;
+            width: 450px;
+            text-align: center;
+            border: 10px solid #000;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            border: 5px solid #000;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.05);
+            background: #000;
+            color: #fff;
+        }
+
+        /* --- ANIMATION HELPERS --- */
+        .dealing-card {
+            position: absolute;
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .countdown-num {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: clamp(6rem, 20vw, 15rem);
+            animation: pulse-zoom 1s infinite;
+            text-align: center;
+        }
+
+        .shuffle-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            animation: shuffle-pulse 1.2s infinite ease-in-out;
+            text-transform: uppercase;
+        }
+
+        @keyframes shuffle-pulse {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.95);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0.3;
+                transform: scale(0.95);
+            }
+        }
+
+        @keyframes pulse-zoom {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+
+        .player-info {
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .difficulty-badge {
+            background: rgba(0, 0, 0, 0.5);
+            color: #aaffaa;
+            padding: 2px 12px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border: 1px solid var(--uno-green);
+            text-transform: uppercase;
+            line-height: 1.5;
+        }
+
+        .turn-active {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .turn-inactive {
+            background: rgba(0, 0, 0, 0.1);
+            color: #888;
+        }
+
+        /* BGM Custom UI */
+        .bgm-control {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #bgmVolume {
+            accent-color: #000;
+            flex-grow: 1;
+        }
+
+        /* Mobile Landscape Guard */
+        @media (max-height: 500px) {
+            :root {
+                --card-width: 80px;
+                --card-height: 120px;
+            }
+
+            .center-pile {
+                gap: 50px;
+            }
+
+            .player-hand .card {
+                margin-left: -40px;
+            }
+        }
+
+        /* Landscape Enforcement Prompt */
+        #rotate-prompt {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            /* Paling atas */
+            background: #1a1a1a;
+            color: white;
+            display: none;
+            /* Sembunyi secara default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        #rotate-prompt i {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: rotate-icon-anim 2.5s ease-in-out infinite;
+        }
+
+        @keyframes rotate-icon-anim {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (orientation: portrait) {
+
+            .table-surface,
+            .pause-btn {
+                display: none;
+            }
+
+            #rotate-prompt {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Countdown & Shuffling Overlay -->
+    <div id="intro-screen" class="screen-overlay active">
+        <div id="countdown-box" class="countdown-num">3</div>
+    </div>
+
+    <!-- Main Game Surface -->
+    <div class="table-surface">
+        <img src="./img/Logo.png" class="uno-logo-bg" alt="UNO Logo">
+        <div class="table-accent-right"></div>
+
+        <div class="pause-btn" onclick="togglePause()"><i class="fas fa-bars"></i></div>
+
+        <!-- Notification History Log -->
+        <div id="history-log">
+            <div id="history-content"></div>
+            <div id="history-toggle" class="history-btn">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+
+        <!-- Bot Area -->
+        <div class="flex flex-col items-center mt-8">
+            <div id="bot-hand" class="card-hand bot-hand flex"></div>
+            <div id="bot-name" class="player-info turn-inactive"
+                style="display: flex; align-items: center; gap: 12px; justify-content: center;">
+                <span>Computer</span>
+                <div class="difficulty-badge">Easy</div>
+            </div>
+        </div>
+
+        <!-- Center Area -->
+        <div class="center-pile">
+            <div class="draw-stack" onclick="handleDrawClick()">
+                <div class="draw-stack-base"></div>
+                <img src="./img/UNO/Behind Kartu.png" class="w-full h-full object-cover rounded-lg">
+            </div>
+
+            <div id="discard-pile" class="discard-stack">
+                <i
+                    class="fas fa-layer-group absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-20 text-4xl"></i>
+                <!-- Cards will be stacked here -->
+            </div>
+        </div>
+
+        <!-- Player Area -->
+        <div class="flex flex-col items-center mb-8">
+            <div id="player-name" class="player-info turn-inactive">PLAYER</div>
+            <div id="player-hand" class="card-hand player-hand flex"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="uno-toast" class="uno-toast">
+        <img src="./img/Logo.png" width="50">
+        <span id="toast-msg">PLAYER TURN</span>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-modal" class="screen-overlay">
+        <div class="menu-card">
+            <h2 class="text-5xl font-black italic mb-8">PAUSED</h2>
+            <button class="btn-action bg-yellow-400" onclick="togglePause()">RESUME</button>
+            <button class="btn-action bg-blue-400" onclick="location.reload()">RESTART</button><button class="btn-action bg-red-500" onclick="window.location.href='./index.html'">MAIN MENU</button>
+
+            <div class="bgm-control">
+                <button id="bgmToggle" class="text-2xl"><i class="fas fa-volume-up"></i></button>
+                <input type="range" id="bgmVolume" min="0" max="100" value="50">
+                <span id="bgmValue" class="font-bold">50%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Color Picker Overlay -->
+    <div id="color-picker" class="screen-overlay">
+        <div class="menu-card">
+            <h2 class="text-3xl font-black mb-6">PILIH WARNA</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <button class="p-8 bg-red-600 rounded-lg" onclick="setWildColor('MERAH')"></button>
+                <button class="p-8 bg-blue-600 rounded-lg" onclick="setWildColor('BIRU')"></button>
+                <button class="p-8 bg-green-600 rounded-lg" onclick="setWildColor('IJO')"></button>
+                <button class="p-8 bg-yellow-400 rounded-lg" onclick="setWildColor('KUNING')"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Overlay -->
+    <div id="challenge-modal" class="screen-overlay">
+        <div class="menu-card">
+            <h2 class="text-3xl font-black mb-6">COMPUTER PLAYED +4</h2>
+            <p class="mb-8 font-semibold">Do you want to challenge? If you fail, you draw 6 cards!</p>
+            <button class="btn-action bg-yellow-400" onclick="resolveChallenge(false)">DRAW 4 CARDS</button>
+            <button class="btn-action bg-blue-500" onclick="resolveChallenge(true)">CHALLENGE!</button>
+        </div>
+    </div>
+
+    <!-- Rotate Device Prompt -->
+    <div id="rotate-prompt">
+        <i class="fas fa-mobile-alt"></i>
+        <h2 class="text-2xl font-black mb-4">PUTAR PERANGKAT ANDA</h2>
+        <p class="font-semibold">Game ini paling baik dinikmati dalam mode Landscape.</p>
+    </div>
+
+    <!-- Victory Overlay -->
+    <div id="win-modal" class="screen-overlay">
+        <div class="menu-card">
+            <h1 id="win-title" class="text-6xl font-black italic text-red-600 mb-4">MENANG!</h1>
+            <p id="win-sub" class="mb-8 font-bold text-gray-500">KARTU BOT TELAH DIBUKA</p>
+            <button class="btn-action bg-green-500" onclick="location.reload()">MAIN LAGI</button>
+            <button class="btn-action bg-gray-200" onclick="window.location.href='./index.html'">MENU UTAMA</button>
+        </div>
+    </div>
+
+    <audio id="bgm" src="./music/Uno Mobile music ost - BGM 3 Hurry up.mp3" loop></audio>
+
+    <script>
+        /**
+         * ==========================================
+         * SECTION: CORE LOGIC & RNG
+         * ==========================================
+         */
+
+        /*
+        PSEUDOCODE RNG UNO:
+
+        INPUT:
+        - Deck berisi 108 kartu (Standard Uno Distribution + 67 Khusus)
+        - Status permainan (giliran, arah, warna aktif)
+        - Difficulty: EASY (Bot murni reaktif)
+
+        PROSES:
+        - Mengacak kartu menggunakan Fisher-Yates Shuffle (RNG murni).
+        - Membagikan kartu satu per satu (dealing animation).
+        - Menentukan giliran awal secara RANDOM (50/50 Player vs Bot).
+        - BOT memilih kartu pertama yang valid dari tangannya tanpa strategi (EASY).
+
+        OUTPUT:
+        - Urutan kartu dalam array deck teracak sempurna.
+        - Distribusi kartu di tangan masing-masing 7 kartu.
+        - Transisi antar giliran yang mulus.
+
+        FILOSOFI RNG:
+        Dalam UNO Classic, karena seluruh 108 kartu dikocok secara acak, maka kesempatan mendapatkan kartu tertentu 
+        sepenuhnya bergantung pada jumlah kartu itu di dalam deck, bukan karena sistem pilih kasih atau “feeling ga hoki”.
+        - Kartu Draw +2, Reverse, dan Skip masing-masing berjumlah 8 kartu (2 per warna), probabilitas tinggi.
+        - Kartu Wild dan Wild Draw +4 masing-masing hanya berjumlah 4 kartu (eksklusif hitam).
+        - Kartu 67 HITAM (Custom) berjumlah 4 kartu. Pemain wajib ambil kartu sampai dapat angka 6 atau 7.
+        - Random ≠ adil, tapi selalu seru 😈🃏
+        */
+
+        let deck = [];
+        let playerHand = [];
+        let botHand = [];
+        let discardPile = [];
+        let gameActive = false;
+        let isPlayerTurn = false;
+        let currentActiveColor = "";
+        let currentActiveValue = "";
+        let persistentToast = false;
+        let challengeState = {}; // Menyimpan status untuk challenge +4
+        let notificationHistory = [];
+        let isProcessingAction = false; // Anti-spam flag
+
+        const playerName = localStorage.getItem('uno_player_name') || "Player";
+
+        function createFullDeck() {
+            const colors = ["IJO", "BIRU", "KUNING", "MERAH"];
+            const fullDeck = [];
+
+            colors.forEach(color => {
+                // 0-9 (0 satu kali, 1-9 dua kali)
+                fullDeck.push({ color, value: "0", img: `./img/UNO/0 ${color}.png` });
+                for (let i = 1; i <= 9; i++) {
+                    fullDeck.push({ color, value: i.toString(), img: `./img/UNO/${i} ${color}.png` });
+                    fullDeck.push({ color, value: i.toString(), img: `./img/UNO/${i} ${color}.png` });
+                }
+                // Special Actions (2 kali per warna)
+                for (let j = 0; j < 2; j++) {
+                    fullDeck.push({ color, value: "skip", img: `./img/UNO/block ${color}.png` });
+                    fullDeck.push({ color, value: "reverse", img: `./img/UNO/reverse ${color}.png` });
+                    fullDeck.push({ color, value: "draw2", img: `./img/UNO/+2 ${color}.png` });
+                }
+            });
+
+            // Black Cards (4 kali masing-masing)
+            for (let k = 0; k < 4; k++) {
+                fullDeck.push({ color: "HITAM", value: "wild", img: "./img/UNO/change color HITAM.png" });
+                fullDeck.push({ color: "HITAM", value: "draw4", img: "./img/UNO/+4 HITAM.png" });
+            }
+
+            // Kartu 67 (Sangat Langka: 15% peluang muncul 1 kartu)
+            if (Math.random() < 0.5) {
+                fullDeck.push({ color: "HITAM", value: "67", img: "./img/UNO/67 HITAM.png" });
+            }
+
+            return shuffle(fullDeck);
+        }
+
+        function shuffle(array) {
+            let m = array.length, t, i;
+            while (m) {
+                i = Math.floor(Math.random() * m--);
+                t = array[m];
+                array[m] = array[i];
+                array[i] = t;
+            }
+            return array;
+        }
+
+        /**
+         * ==========================================
+         * SECTION: GAME FLOW & ANIMATIONS
+         * ==========================================
+         */
+
+        async function initGame() {
+            document.getElementById('player-name').innerText = playerName.toUpperCase();
+
+            // 1. Countdown 3-2-1
+            const cd = document.getElementById('countdown-box');
+            for (let i = 3; i > 0; i--) {
+                cd.innerText = i;
+                await sleep(1000);
+            }
+
+            // 2. Shuffle Animation (Max 10s)
+            cd.className = 'shuffle-text';
+            cd.innerText = "SHUFFLING...";
+            await runShuffleAnimation();
+
+            // 3. Create & Deal
+            deck = createFullDeck();
+
+            // Tentukan giliran awal (50% Player, 50% Bot)
+            const starter = Math.random() > 0.5 ? 'player' : 'bot';
+            balanceInitialHands(starter);
+            await dealInitialCards(starter);
+
+            // 4. Start Game
+            startGame(starter);
+        }
+
+        async function runShuffleAnimation() {
+            const intro = document.getElementById('intro-screen');
+            // Overhand style: cards flying up and down
+            for (let i = 0; i < 12; i++) {
+                const dummy = document.createElement('div');
+                dummy.className = 'card dealing-card';
+                dummy.style.backgroundImage = "url('./img/UNO/Behind Kartu.png')";
+                dummy.style.left = "50%";
+                dummy.style.top = "50%";
+                dummy.style.transform = "translate(-50%, -50%)";
+                intro.appendChild(dummy);
+
+                await sleep(70);
+                dummy.style.transform = `translate(-50%, ${i % 2 === 0 ? '-180%' : '80%'}) rotate(${Math.random() * 40 - 20}deg)`;
+                setTimeout(() => dummy.remove(), 400);
+            }
+            await sleep(300);
+            intro.classList.remove('active');
+        }
+
+        function balanceInitialHands(starter) {
+            // Algoritma penyeimbang agar Bot tidak mendapat kartu "Dewa" terlalu banyak di awal
+            // Mengatasi keluhan: "Bot lebih sering dapat kartu spesial"
+            let deckSize = deck.length;
+            let playerIndices = [];
+            let botIndices = [];
+
+            let current = starter;
+            // Identifikasi 14 kartu teratas (yang akan di-pop)
+            for (let i = 0; i < 14; i++) {
+                let idx = deckSize - 1 - i;
+                if (current === 'player') {
+                    playerIndices.push(idx);
+                    current = 'bot';
+                } else {
+                    botIndices.push(idx);
+                    current = 'player';
+                }
+            }
+
+            // Bobot: Angka=0, Aksi=1, Wild/Hitam=2
+            const getWeight = (card) => {
+                if (card.color === 'HITAM') return 2;
+                if (isNaN(parseInt(card.value))) return 1;
+                return 0;
+            };
+
+            let playerScore = playerIndices.reduce((sum, idx) => sum + getWeight(deck[idx]), 0);
+            let botScore = botIndices.reduce((sum, idx) => sum + getWeight(deck[idx]), 0);
+
+            // Jika Bot lebih kuat dari Player, tukar kartu spesial Bot dengan kartu biasa dari tumpukan bawah
+            if (botScore > playerScore) {
+                for (let i = 0; i < botIndices.length; i++) {
+                    let botCardIdx = botIndices[i];
+                    // Jika kartu ini spesial, coba tukar
+                    if (getWeight(deck[botCardIdx]) > 0) {
+                        // Cari kartu biasa di tumpukan sisa (index 0 s/d deckSize-15)
+                        for (let k = 0; k < deckSize - 14; k++) {
+                            if (getWeight(deck[k]) === 0) {
+                                // Swap
+                                [deck[botCardIdx], deck[k]] = [deck[k], deck[botCardIdx]];
+                                botScore -= getWeight(deck[k]); // Kurangi skor bot (deck[k] skrg kartu spesial yg dibuang)
+                                break;
+                            }
+                        }
+                    }
+                    if (botScore <= playerScore) break;
+                }
+            }
+        }
+
+        async function dealInitialCards(firstReceiver) {
+            let current = firstReceiver;
+
+            for (let i = 0; i < 14; i++) {
+                await animateCardToHand(current);
+                current = current === 'player' ? 'bot' : 'player';
+                await sleep(250); // Deal max 20s total (14 * 0.35 = ~5s)
+            }
+        }
+
+        async function animateCardToHand(target) {
+            const cardData = deck.pop();
+            const startPos = document.querySelector('.draw-stack').getBoundingClientRect();
+            const endTarget = document.getElementById(target + '-hand');
+
+            const cardEl = document.createElement('div');
+            cardEl.className = 'card dealing-card';
+            cardEl.style.backgroundImage = "url('./img/UNO/Behind Kartu.png')";
+            cardEl.style.left = startPos.left + "px";
+            cardEl.style.top = startPos.top + "px";
+            document.body.appendChild(cardEl);
+
+            const handPos = endTarget.getBoundingClientRect();
+            await sleep(50);
+
+            cardEl.style.left = (handPos.left + (handPos.width / 2) - 65) + "px";
+            cardEl.style.top = handPos.top + "px";
+            cardEl.style.transform = "scale(0.8)";
+
+            if (target === 'player') playerHand.push(cardData);
+            else botHand.push(cardData);
+
+            await sleep(500);
+            cardEl.remove();
+            renderHands();
+        }
+
+        function startGame(starter) {
+            let firstCard = deck.pop();
+            // Start card cannot be Black
+            while (firstCard.color === "HITAM") {
+                deck.unshift(firstCard);
+                shuffle(deck);
+                firstCard = deck.pop();
+            }
+
+            discardPile.push(firstCard);
+            currentActiveColor = firstCard.color;
+            currentActiveValue = firstCard.value;
+
+            gameActive = true;
+            isPlayerTurn = (starter === 'player');
+
+            renderDiscard();
+            updateTurnUI();
+
+            if (!isPlayerTurn) setTimeout(runBotEasy, 1500);
+        }
+
+        /**
+         * ==========================================
+         * SECTION: RENDER & UI UPDATES
+         * ==========================================
+         */
+
+        function renderHands() {
+            const pContainer = document.getElementById('player-hand');
+            const bContainer = document.getElementById('bot-hand');
+            pContainer.innerHTML = '';
+            bContainer.innerHTML = '';
+
+            playerHand.forEach((card, idx) => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                el.style.backgroundImage = `url('${card.img}')`;
+                el.style.zIndex = idx;
+                el.onclick = () => tryPlayCard(idx);
+                pContainer.appendChild(el);
+            });
+
+            botHand.forEach((_, idx) => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                el.style.backgroundImage = "url('./img/UNO/Behind Kartu.png')";
+                el.style.zIndex = idx;
+                bContainer.appendChild(el);
+            });
+        }
+
+        function renderDiscard() {
+            const container = document.getElementById('discard-pile');
+            container.innerHTML = '';
+
+            // Render last 3 cards for stack effect
+            const startIdx = Math.max(0, discardPile.length - 3);
+            for (let i = startIdx; i < discardPile.length; i++) {
+                const card = discardPile[i];
+                const el = document.createElement('div');
+                el.className = 'card';
+                el.style.backgroundImage = `url('${card.img}')`;
+                // Natural stack effect
+                const rot = (i * 12) % 40 - 20;
+                const offset = (i - startIdx) * 2;
+                el.style.transform = `rotate(${rot}deg) translate(${offset}px, ${offset}px)`;
+                container.appendChild(el);
+            }
+        }
+
+        function updateTurnUI() {
+            const pName = document.getElementById('player-name');
+            const bName = document.getElementById('bot-name');
+
+            if (isPlayerTurn) {
+                pName.className = 'player-info turn-active';
+                bName.className = 'player-info turn-inactive';
+                if (!persistentToast) showToast("GILIRANMU!", 'turn');
+            } else {
+                pName.className = 'player-info turn-inactive';
+                bName.className = 'player-info turn-active';
+                if (!persistentToast) showToast("GILIRAN COMPUTER", 'turn');
+            }
+        }
+
+        function showToast(msg, type = 'info', persistent = false) {
+            const t = document.getElementById('uno-toast');
+            const msgEl = document.getElementById('toast-msg');
+
+            // Hapus kelas warna sebelumnya
+            t.classList.remove('toast-penalty', 'toast-turn', 'toast-uno', 'toast-info', 'toast-success');
+
+            // Tambahkan kelas warna baru
+            t.classList.add(`toast-${type}`);
+
+            if (type === 'uno') {
+                // msg akan menjadi "PLAYER MENGUCAPKAN"
+                msgEl.innerHTML = `${msg.toUpperCase()} <span class="font-black italic text-2xl ml-2">UNO!</span>`;
+            } else {
+                msgEl.innerText = msg.toUpperCase();
+            }
+
+            t.classList.add('active');
+
+            // Tambahkan ke riwayat notifikasi
+            addNotificationToHistory(type === 'uno' ? `${msg.toUpperCase()} UNO!` : msg);
+
+            // kalau persistent, jangan auto hide
+            if (persistent) {
+                persistentToast = true;
+                return;
+            }
+
+            setTimeout(() => {
+                if (!persistentToast) {
+                    t.classList.remove('active');
+                }
+            }, 10000); // Durasi notifikasi diubah menjadi 10 detik
+        }
+
+        /**
+         * ==========================================
+         * SECTION: GAMEPLAY LOGIC
+         * ==========================================
+         */
+
+        function tryPlayCard(idx) {
+            if (!isPlayerTurn || !gameActive || isProcessingAction) return;
+
+            const card = playerHand[idx];
+
+            // Aturan resmi: Pemain tidak bisa memainkan +4 jika punya kartu warna yang cocok.
+            // Ini untuk mencegah pemain "curang", sementara bot "curang" bisa ditantang.
+            if (card.value === 'draw4') {
+                const hasMatchingColorCard = playerHand.some(c => c.color === currentActiveColor);
+                if (hasMatchingColorCard) {
+                    showToast("TIDAK BISA +4, ADA KARTU WARNA SAMA!", 'penalty');
+                    return; // Blokir gerakan
+                }
+            }
+            if (isValidMove(card)) {
+                isProcessingAction = true; // Lock input
+
+                // 🔥 MATIKAN TOAST PERSISTENT SETELAH PLAYER MAIN
+                persistentToast = false;
+                document.getElementById('uno-toast').classList.remove('active');
+
+                executeMove('player', idx);
+            } else {
+                showToast("KARTU TIDAK COCOK!", 'penalty');
+            }
+        }
+
+        function isValidMove(card) {
+            return card.color === currentActiveColor ||
+                card.value === currentActiveValue ||
+                card.color === "HITAM";
+        }
+
+        async function executeMove(target, idx) {
+            const hand = target === 'player' ? playerHand : botHand;
+            const card = hand[idx]; // Jangan hapus dulu, ambil referensinya
+
+            // 1. Animasi Kartu Terbang (Realistis)
+            await animateCardPlay(target, idx, card);
+
+            // 2. Update Data & UI
+            hand.splice(idx, 1);
+            discardPile.push(card);
+            renderHands();
+            renderDiscard();
+
+            if (hand.length === 1) {
+                const player = target === 'player' ? playerName.toUpperCase() : 'COMPUTER';
+                showToast(player + " MENGUCAPKAN", 'uno');
+            }
+            if (hand.length === 0) {
+                endGame(target);
+                return;
+            }
+
+            // Logika khusus untuk kartu hitam (+4, Wild, 67)
+            if (card.value === 'draw4') {
+                if (target === 'player') {
+                    // Pemain memainkan +4 (sudah divalidasi legal). Bot Easy tidak menantang.
+                    openColorPicker(card.value);
+                } else { // Bot memainkan +4
+                    // Simpan state untuk kemungkinan challenge dari pemain
+                    challengeState = {
+                        offendingHand: [...botHand], // Salinan tangan bot saat ini
+                        colorBeforePlay: currentActiveColor
+                    };
+                    document.getElementById('challenge-modal').classList.add('active');
+                }
+                return; // Permainan berhenti, menunggu input dari challenge modal atau color picker
+            }
+
+            if (card.color === "HITAM") { // Untuk Wild biasa atau 67
+                // MODIFIKASI: Kartu 67 tidak perlu pilih warna (langsung efek)
+                if (card.value === '67') {
+                    await applyCardEffects(card.value, target);
+                    if (target === 'player') isProcessingAction = false;
+                    return;
+                }
+
+                if (target === 'player') {
+                    openColorPicker(card.value);
+                    return; // Tunggu input warna, jangan unlock dulu
+                } else { // Bot memainkan Wild biasa
+                    if (card.value === 'wild') {
+                        const colors = ["MERAH", "BIRU", "IJO", "KUNING"];
+                        currentActiveColor = colors[Math.floor(Math.random() * 4)];
+                        showToast(`COMPUTER PILIH WARNA ${currentActiveColor}`, 'info', true);
+                    }
+                    await applyCardEffects(card.value, 'bot');
+                }
+            } else { // Kartu biasa berwarna
+                currentActiveColor = card.color;
+                currentActiveValue = card.value;
+                await applyCardEffects(card.value, target);
+                if (target === 'player') isProcessingAction = false; // Unlock setelah efek selesai
+            }
+        }
+
+        // Fungsi Baru: Animasi Kartu dari Tangan ke Discard Pile
+        async function animateCardPlay(target, idx, cardData) {
+            const handId = target === 'player' ? 'player-hand' : 'bot-hand';
+            const handEl = document.getElementById(handId);
+            if (!handEl || !handEl.children[idx]) return;
+
+            const cardEl = handEl.children[idx];
+            const rect = cardEl.getBoundingClientRect();
+
+            // Clone kartu untuk animasi terbang
+            const clone = document.createElement('div');
+            clone.className = 'card';
+            clone.style.backgroundImage = cardEl.style.backgroundImage;
+            clone.style.position = 'fixed';
+            clone.style.left = rect.left + 'px';
+            clone.style.top = rect.top + 'px';
+            clone.style.width = rect.width + 'px';
+            clone.style.height = rect.height + 'px';
+            clone.style.zIndex = 9999;
+            clone.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)'; // Efek "lempar"
+            clone.style.transformOrigin = 'center center';
+            clone.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5)';
+
+            document.body.appendChild(clone);
+
+            // Jika Bot, ubah gambar ke kartu asli (efek reveal saat dilempar)
+            if (target === 'bot' && cardData) {
+                clone.style.backgroundImage = `url('${cardData.img}')`;
+            }
+
+            // Sembunyikan kartu asli
+            cardEl.style.opacity = '0';
+
+            const discardEl = document.getElementById('discard-pile');
+            const discardRect = discardEl.getBoundingClientRect();
+
+            // Force reflow
+            clone.offsetHeight;
+
+            // Target posisi (tengah discard pile) dengan sedikit variasi acak
+            const randAngle = Math.random() * 40 - 20;
+            const randX = Math.random() * 20 - 10;
+            const randY = Math.random() * 20 - 10;
+
+            clone.style.left = (discardRect.left + randX) + 'px';
+            clone.style.top = (discardRect.top + randY) + 'px';
+            clone.style.transform = `rotate(${randAngle}deg) scale(1)`;
+
+            await sleep(400); // Tunggu animasi selesai
+            clone.remove();
+        }
+
+        async function applyCardEffects(value, attacker) {
+            const victim = attacker === 'player' ? 'bot' : 'player';
+            let skipNext = false;
+
+            switch (value) {
+                case "skip":
+                case "reverse": // 2 players mode: Reverse works like Skip
+                    skipNext = true;
+                    showToast(value.toUpperCase() + "!", 'info');
+                    break;
+                case "draw2":
+                    await drawCards(victim, 2);
+                    skipNext = true;
+                    showToast("+2 DRAW!", 'penalty');
+                    break;
+                case "draw4":
+                    await drawCards(victim, 4);
+                    skipNext = true;
+                    showToast(`+4 WILD! WARNA ${currentActiveColor}`, 'penalty');
+                    break;
+                case "67":
+                    showToast("KARTU ACAK 6-7!", 'info');
+                    // Secara acak menentukan siapa yang mendapat 6 kartu dan siapa yang 7
+                    const playerGets6 = Math.random() < 0.5;
+                    const playerDrawCount = playerGets6 ? 6 : 7;
+                    const botDrawCount = playerGets6 ? 7 : 6;
+
+                    // Beri jeda sedikit agar notifikasi pertama terbaca
+                    await sleep(1200);
+
+                    showToast(`KAMU AMBIL ${playerDrawCount} KARTU, COMPUTER AMBIL ${botDrawCount} KARTU.`, 'penalty');
+
+                    // Jalankan pengambilan kartu untuk kedua pemain
+                    await drawCards('player', playerDrawCount);
+                    await drawCards('bot', botDrawCount);
+                    // Giliran berpindah ke pemain selanjutnya, jadi skipNext tetap false
+                    break;
+            }
+
+            if (!skipNext) {
+                isPlayerTurn = !isPlayerTurn;
+            }
+
+            updateTurnUI();
+            if (!isPlayerTurn) setTimeout(runBotEasy, 2000 + Math.random() * 3000);
+        }
+
+        async function drawCards(target, count) {
+            const hand = target === 'player' ? playerHand : botHand;
+            for (let i = 0; i < count; i++) {
+                if (deck.length === 0) {
+                    if (discardPile.length > 1) {
+                        const top = discardPile.pop();
+                        deck = shuffle(discardPile);
+                        discardPile = [top];
+                        renderDiscard();
+                    } else {
+                        break;
+                    }
+                }
+                await animateInGameDraw(target);
+                hand.push(deck.pop());
+                renderHands();
+            }
+        }
+
+        async function animateInGameDraw(target) {
+            const drawStack = document.querySelector('.draw-stack');
+            const startRect = drawStack.getBoundingClientRect();
+            const handId = target === 'player' ? 'player-hand' : 'bot-hand';
+            const handEl = document.getElementById(handId);
+            const handRect = handEl.getBoundingClientRect();
+
+            const clone = document.createElement('div');
+            clone.className = 'card';
+            clone.style.backgroundImage = "url('./img/UNO/Behind Kartu.png')";
+            clone.style.position = 'fixed';
+            clone.style.left = startRect.left + 'px';
+            clone.style.top = startRect.top + 'px';
+            clone.style.width = startRect.width + 'px';
+            clone.style.height = startRect.height + 'px';
+            clone.style.zIndex = 9999;
+            clone.style.transition = 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            clone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+
+            document.body.appendChild(clone);
+
+            clone.offsetHeight; // Force reflow
+
+            const targetX = handRect.left + (handRect.width / 2) - (startRect.width / 2);
+            const targetY = handRect.top;
+
+            clone.style.left = targetX + 'px';
+            clone.style.top = targetY + 'px';
+            clone.style.transform = `rotate(${Math.random() * 10 - 5}deg)`;
+
+            await sleep(500);
+            clone.remove();
+        }
+
+        async function handleDrawClick() {
+            if (!isPlayerTurn || !gameActive || isProcessingAction) return;
+            isProcessingAction = true;
+            await drawCards('player', 1);
+            isPlayerTurn = false;
+            updateTurnUI();
+            isProcessingAction = false;
+            setTimeout(runBotEasy, 2000);
+        }
+
+        /**
+         * ==========================================
+         * SECTION: BOT LOGIC (EASY)
+         * ==========================================
+         */
+
+        async function runBotEasy() {
+            if (!gameActive || isPlayerTurn) return;
+
+            let moveIdx = -1;
+            for (let i = 0; i < botHand.length; i++) {
+                if (isValidMove(botHand[i])) {
+                    moveIdx = i;
+                    break;
+                }
+            }
+
+            // Jika bot punya kartu yang bisa dimainkan...
+            if (moveIdx !== -1) {
+                // ...ada kemungkinan 25% dia "salah lihat" dan malah ambil kartu.
+                // Ini untuk menurunkan tingkat kesulitan game.
+                const mistakeChance = 0.25;
+                if (Math.random() < mistakeChance) {
+                    showToast("COMPUTER SALAH LIHAT, AMBIL KARTU", 'info');
+                    await drawCards('bot', 1);
+                    isPlayerTurn = true; // Giliran kembali ke player
+                    updateTurnUI();
+                    return;
+                }
+                executeMove('bot', moveIdx);
+            } else {
+                // Jika tidak ada kartu, wajib ambil.
+                showToast("COMPUTER AMBIL KARTU", 'info');
+                await drawCards('bot', 1);
+                isPlayerTurn = true;
+                updateTurnUI();
+            }
+        }
+
+        /**
+         * ==========================================
+         * SECTION: SYSTEM UTILS
+         * ==========================================
+         */
+
+        async function resolveChallenge(playerChallenges) {
+            document.getElementById('challenge-modal').classList.remove('active');
+            const { offendingHand, colorBeforePlay } = challengeState;
+
+            // Cek apakah permainan bot ilegal (apakah dia punya kartu dengan warna yang cocok)
+            const wasIllegalPlay = offendingHand.some(card => card.color === colorBeforePlay);
+
+            if (playerChallenges) {
+                if (wasIllegalPlay) {
+                    // CHALLENGE BERHASIL: Bot curang
+                    showToast("CHALLENGE BERHASIL! COMPUTER AMBIL 4 KARTU.", 'success');
+                    await drawCards('bot', 4);
+                    // Giliran kembali ke pemain, warna aktif tidak berubah
+                    isPlayerTurn = true;
+                    updateTurnUI();
+                } else {
+                    // CHALLENGE GAGAL: Bot bermain jujur, pemain dihukum
+                    showToast("CHALLENGE GAGAL! KAMU AMBIL 6 KARTU.", 'penalty');
+                    await drawCards('player', 6);
+                    // Bot memilih warna, dan giliran pemain dilewati
+                    const colors = ["MERAH", "BIRU", "IJO", "KUNING"];
+                    currentActiveColor = colors[Math.floor(Math.random() * 4)];
+                    currentActiveValue = 'draw4';
+                    showToast(`COMPUTER PILIH WARNA ${currentActiveColor}`, 'info', true);
+                    isPlayerTurn = false; // Tetap giliran bot (skip player)
+                    updateTurnUI();
+                    setTimeout(runBotEasy, 2000 + Math.random() * 3000);
+                }
+            } else {
+                // Pemain TIDAK menantang, terima nasib
+                showToast("KAMU AMBIL 4 KARTU.", 'penalty');
+                await drawCards('player', 4);
+                // Bot memilih warna, dan giliran pemain dilewati
+                const colors = ["MERAH", "BIRU", "IJO", "KUNING"];
+                currentActiveColor = colors[Math.floor(Math.random() * 4)];
+                currentActiveValue = 'draw4';
+                showToast(`COMPUTER PILIH WARNA ${currentActiveColor}`, 'info', true);
+                isPlayerTurn = false; // Tetap giliran bot (skip player)
+                updateTurnUI();
+                setTimeout(runBotEasy, 2000 + Math.random() * 3000);
+            }
+
+            challengeState = {}; // Reset state
+        }
+
+        let pendingWildValue = "";
+        function openColorPicker(val) {
+            pendingWildValue = val;
+            document.getElementById('color-picker').classList.add('active'); // This line was missing a semicolon
+        }
+
+        async function setWildColor(color) {
+            currentActiveColor = color;
+            document.getElementById('color-picker').classList.remove('active');
+            showToast("WARNA: " + color, 'info');
+            applyCardEffects(pendingWildValue, 'player');
+            await applyCardEffects(pendingWildValue, 'player');
+            isProcessingAction = false; // Unlock setelah efek selesai
+        }
+
+        function togglePause() {
+            const m = document.getElementById('pause-modal');
+            m.classList.toggle('active');
+        }
+
+        function endGame(winner) {
+            gameActive = false;
+            const modal = document.getElementById('win-modal');
+            const title = document.getElementById('win-title');
+
+            if (winner === 'player') {
+                title.innerText = "KAMU MENANG!";
+                title.style.color = "var(--uno-green)";
+            } else {
+                title.innerText = "COMPUTER MENANG!";
+                title.style.color = "var(--uno-red)";
+            }
+
+            // Show Bot Cards
+            const bContainer = document.getElementById('bot-hand');
+            bContainer.innerHTML = '';
+            botHand.forEach(card => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                el.style.backgroundImage = `url('${card.img}')`;
+                bContainer.appendChild(el);
+            });
+
+            setTimeout(() => modal.classList.add('active'), 1500);
+        }
+
+        function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+        // Audio Logic
+        const bgm = document.getElementById('bgm');
+        const vSlider = document.getElementById('bgmVolume');
+        const vToggle = document.getElementById('bgmToggle');
+
+        vSlider.oninput = (e) => {
+            bgm.volume = e.target.value / 100;
+            document.getElementById('bgmValue').innerText = e.target.value + "%";
+        };
+
+        vToggle.onclick = () => {
+            if (bgm.paused) {
+                bgm.play();
+                vToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+            } else {
+                bgm.pause();
+                vToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            }
+        };
+
+        // Riwayat Notifikasi
+        const historyToggle = document.getElementById('history-toggle');
+        historyToggle.addEventListener('click', () => {
+            const log = document.getElementById('history-log');
+            log.classList.toggle('active');
+
+            // Jika menutup drawer, tandai semua sebagai sudah dibaca (terlewat)
+            if (!log.classList.contains('active')) {
+                notificationHistory.forEach(item => item.read = true);
+                setTimeout(renderHistory, 500); // Render ulang setelah animasi tutup selesai
+            }
+        });
+
+        function addNotificationToHistory(msg) {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+            notificationHistory.unshift({
+                msg: msg.toUpperCase(),
+                read: false, // Default belum dibaca (Baru)
+                time: timeStr
+            });
+
+            if (notificationHistory.length > 20) { // Batasi riwayat hingga 20 entri
+                notificationHistory.pop();
+            }
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const contentArea = document.getElementById('history-content');
+            contentArea.innerHTML = notificationHistory.map(item => `
+                <div class="history-item ${item.read ? '' : 'new'}">
+                    <span>${item.read ? '' : '<i class="fas fa-circle text-red-500 text-xs mr-2"></i>'}${item.msg}</span>
+                    <span class="history-time">${item.time}</span>
+                </div>
+            `).join('');
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+
+</html>
