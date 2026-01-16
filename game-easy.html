@@ -578,8 +578,8 @@
         /* Mobile Landscape Guard */
         @media (max-height: 500px) {
             :root {
-                --card-width: 80px;
-                --card-height: 120px;
+                --card-width: 65px;
+                --card-height: 98px;
             }
 
             .center-pile {
@@ -1533,6 +1533,19 @@
             m.classList.toggle('active');
         }
 
+        // --- MOBILE LAYOUT FIX ---
+        function updateMobileLayout() {
+            // Ambil tinggi viewport yang sebenarnya (visible area)
+            const vh = window.innerHeight;
+            document.documentElement.style.setProperty('--app-height', `${vh}px`);
+            window.scrollTo(0, 0);
+        }
+
+        window.addEventListener('resize', updateMobileLayout);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateMobileLayout, 200);
+        });
+
         // --- FULLSCREEN LOGIC ---
         function toggleFullscreen() {
             const elem = document.documentElement;
@@ -1544,6 +1557,9 @@
                 } else if (elem.webkitRequestFullscreen) { /* Safari */
                     elem.webkitRequestFullscreen();
                 }
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(e => console.log(e));
+                }
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -1551,6 +1567,8 @@
                     document.webkitExitFullscreen();
                 }
             }
+            // Update layout setelah transisi fullscreen selesai
+            setTimeout(updateMobileLayout, 500);
         }
 
         // Update Icon saat status fullscreen berubah (misal tekan ESC)
@@ -1650,7 +1668,10 @@
             `).join('');
         }
 
-        window.onload = initGame;
+        window.onload = () => {
+            updateMobileLayout();
+            initGame();
+        };
     </script>
 </body>
 
