@@ -1106,6 +1106,7 @@
                 el.style.zIndex = idx;
                 bContainer.appendChild(el);
             });
+            adjustHandLayout();
         }
 
         function renderDiscard() {
@@ -1125,6 +1126,44 @@
                 el.style.transform = `rotate(${rot}deg) translate(${offset}px, ${offset}px)`;
                 container.appendChild(el);
             }
+        }
+
+        function adjustHandLayout() {
+            const screenWidth = window.innerWidth;
+            const maxWidth = screenWidth * 0.95; // Max 95% layar
+
+            const hands = [
+                { id: 'player-hand', origin: 'center bottom' },
+                { id: 'bot-hand', origin: 'center top' }
+            ];
+
+            hands.forEach(h => {
+                const container = document.getElementById(h.id);
+                if (!container || container.children.length === 0) return;
+
+                container.style.transform = 'none';
+                container.style.width = 'auto';
+
+                const cards = Array.from(container.children);
+                const cardStyle = window.getComputedStyle(cards[0]);
+                const cardWidth = parseFloat(cardStyle.width);
+
+                let marginLeft = 0;
+                if (cards.length > 1) {
+                    marginLeft = parseFloat(window.getComputedStyle(cards[1]).marginLeft);
+                }
+
+                const oneCardStrip = cardWidth + marginLeft;
+                const totalWidth = (cards.length - 1) * oneCardStrip + cardWidth;
+
+                if (totalWidth > maxWidth) {
+                    const scale = maxWidth / totalWidth;
+                    container.style.transform = `scale(${scale})`;
+                    container.style.transformOrigin = h.origin;
+                } else {
+                    container.style.transform = 'none';
+                }
+            });
         }
 
         function updateTurnUI() {
