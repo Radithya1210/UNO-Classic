@@ -691,6 +691,13 @@
                 display: flex;
             }
         }
+
+        /* Hide Fullscreen button on mobile/tablet devices */
+        @media (max-width: 1024px) {
+            #fs-btn {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
