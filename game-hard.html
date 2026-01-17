@@ -1020,6 +1020,8 @@
                     if (botScore <= playerScore) break;
                 }
             }
+            // HARD MODE: Tidak ada penyeimbangan (Nerf). Biarkan Bot memiliki kartu kuat.
+            // Logika penyeimbang dihapus agar Bot lebih sering menang.
         }
 
         async function dealInitialCards(firstReceiver) {
@@ -1517,8 +1519,8 @@
 
         function scheduleBotTurn() {
             if (!gameActive) return;
-            // Delay Hard: 0.5s - 1.5s (Cepat & Agresif)
-            const delay = 500 + Math.random() * 1000;
+            // Delay Hard: 0.3s - 0.8s (Sangat Cepat & Menekan)
+            const delay = 300 + Math.random() * 500;
             setTimeout(runBotHard, delay);
         }
 
@@ -1545,36 +1547,68 @@
 
                     // 1. MENANG SEKARANG (Prioritas Mutlak)
                     if (botHand.length === 1) return -1; // Kartu terakhir = menang
+                    const calculateScore = (card) => {
+                        let score = 0;
+                        const isChainable = ['skip', 'reverse', 'draw2', 'draw4'].includes(card.value);
 
-                    // 2. KEEP TURN (Combo) - Skip, Reverse, +2, +4 memberikan giliran lagi di 1v1
-                    const isTurnKeeperA = ['skip', 'reverse', 'draw2', 'draw4'].includes(cardA.value);
-                    const isTurnKeeperB = ['skip', 'reverse', 'draw2', 'draw4'].includes(cardB.value);
+                        // 1. COMBO / CHAINING (Prioritas Utama di 1v1)
+                        // Kartu ini memberikan giliran ekstra, jadi mainkan duluan untuk mengosongkan tangan.
+                        if (isChainable) score += 500;
 
-                    if (isTurnKeeperA) scoreA += 100;
-                    if (isTurnKeeperB) scoreB += 100;
+                        // 2. KEEP TURN (Combo) - Skip, Reverse, +2, +4 memberikan giliran lagi di 1v1
+                        const isTurnKeeperA = ['skip', 'reverse', 'draw2', 'draw4'].includes(cardA.value);
+                        const isTurnKeeperB = ['skip', 'reverse', 'draw2', 'draw4'].includes(cardB.value);
+                        // 2. KILLER MOVE (+4 & +2)
+                        // Sangat agresif jika legal.
+                        if (card.value === 'draw4') {
+                            // Cek legalitas +4 (Bot Hard tidak mau ambil risiko challenge kecuali terdesak)
+                            const hasMatchingColor = botHand.some(c => c.color === currentColor && c.color !== 'HITAM');
+                            if (hasMatchingColor) {
+                                score -= 5000; // Jangan mainkan jika ilegal (kecuali satu-satunya jalan)
+                            } else {
+                                score += 2000; // Legal +4 adalah kartu terbaik
+                            }
+                        }
+                        if (card.value === 'draw2') score += 1000;
 
-                    // 3. HINDARI +4 ILEGAL (Smart Bot)
-                    // Jika punya kartu warna yang sama, jangan mainkan +4 (kecuali terpaksa)
-                    const hasMatchingColor = botHand.some(c => c.color === currentColor);
-                    if (cardA.value === 'draw4' && hasMatchingColor) scoreA -= 200;
-                    if (cardB.value === 'draw4' && hasMatchingColor) scoreB -= 200;
+                        if (isTurnKeeperA) scoreA += 100;
+                        if (isTurnKeeperB) scoreB += 100;
+                        // 3. AGRESIVITAS MAKSIMAL (Jika pemain tinggal sedikit kartu)
+                        if (playerCardCount <= 4) {
+                            if (card.value === 'draw4' && score > 0) score += 5000; // Prioritas mutlak
+                            if (card.value === 'draw2') score += 3000;
+                            if (card.value === 'skip' || card.value === 'reverse') score += 2000;
+                        }
 
-                    // 4. AGRESIVITAS (Jika lawan mau menang)
-                    if (playerCardCount <= 3) {
-                        // Prioritaskan serangan
-                        if (['draw2', 'draw4'].includes(cardA.value)) scoreA += 50;
-                        if (['draw2', 'draw4'].includes(cardB.value)) scoreB += 50;
-                    }
+                        // 3. HINDARI +4 ILEGAL (Smart Bot)
+                        // Jika punya kartu warna yang sama, jangan mainkan +4 (kecuali terpaksa)
+                        const hasMatchingColor = botHand.some(c => c.color === currentColor);
+                        if (cardA.value === 'draw4' && hasMatchingColor) scoreA -= 200;
+                        if (cardB.value === 'draw4' && hasMatchingColor) scoreB -= 200;
+                        // 4. STRATEGI WARNA (Dominasi)
+                        if (card.color === bestColor) score += 100;
 
-                    // 5. STRATEGI WARNA
-                    if (cardA.color === bestColor) scoreA += 10;
-                    if (cardB.color === bestColor) scoreB += 10;
+                        // 4. AGRESIVITAS (Jika lawan mau menang)
+                        if (playerCardCount <= 3) {
+                            // Prioritaskan serangan
+                            if (['draw2', 'draw4'].includes(cardA.value)) scoreA += 50;
+                            if (['draw2', 'draw4'].includes(cardB.value)) scoreB += 50;
+                        }
+                        // 5. SIMPAN WILD BIASA (Untuk keadaan darurat)
+                        if (card.value === 'wild') score -= 50;
+
+                        // 5. STRATEGI WARNA
+                        if (cardA.color === bestColor) scoreA += 10;
+                        if (cardB.color === bestColor) scoreB += 10;
+                        return score;
+                    };
 
                     // 6. BUANG KARTU POIN TINGGI (Action cards non-wild)
                     if (['skip', 'reverse', 'draw2'].includes(cardA.value)) scoreA += 5;
                     if (['skip', 'reverse', 'draw2'].includes(cardB.value)) scoreB += 5;
 
                     return scoreB - scoreA;
+                    return calculateScore(cardB) - calculateScore(cardA);
                 });
 
                 // Hard Mode: Selalu pilih langkah terbaik (Top 1)
@@ -1589,6 +1623,7 @@
 
                 if (isValidMove(newCard)) {
                     await sleep(600); // Delay minimal
+                    await sleep(400); // Delay minimal, reaksi instan
                     executeMove('bot', newCardIdx);
                 } else {
                     isPlayerTurn = true;

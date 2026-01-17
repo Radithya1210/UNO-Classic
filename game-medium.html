@@ -1517,8 +1517,8 @@
 
         function scheduleBotTurn() {
             if (!gameActive) return;
-            // Delay manusiawi: 1.5s - 3.0s untuk berpikir
-            const delay = 1500 + Math.random() * 1500;
+            // Delay Medium: 1.0s - 2.0s (Lebih responsif & pintar)
+            const delay = 1000 + Math.random() * 1000;
             setTimeout(runBotMedium, delay);
         }
 
@@ -1535,45 +1535,51 @@
             if (validMoves.length > 0) {
                 const bestColor = getBotBestColor();
                 const playerCardCount = playerHand.length;
+                const currentColor = currentActiveColor;
 
                 validMoves.sort((a, b) => {
                     const cardA = a.card;
                     const cardB = b.card;
-                    let scoreA = 0;
-                    let scoreB = 0;
 
-                    // 1. MENANG SEKARANG (Prioritas Mutlak)
-                    if (botHand.length === 1) return -1;
+                    const calculateScore = (card) => {
+                        let score = 0;
 
-                    // 2. DEFENSIVE: Jika pemain mau menang (<= 3 kartu)
-                    if (playerCardCount <= 3) {
-                        // Prioritaskan kartu serangan (+2, +4, Skip, Reverse)
-                        if (['draw2', 'draw4', 'skip', 'reverse'].includes(cardA.value)) scoreA += 10;
-                        if (['draw2', 'draw4', 'skip', 'reverse'].includes(cardB.value)) scoreB += 10;
-                    }
+                        // 1. AGRESIVITAS (Cegah Pemain Menang)
+                        // Jika pemain tinggal sedikit kartu (<= 4), prioritaskan serangan
+                        if (playerCardCount <= 4) {
+                            if (card.value === 'draw4') score += 100;
+                            if (card.value === 'draw2') score += 80;
+                            if (card.value === 'skip' || card.value === 'reverse') score += 60;
+                        }
 
-                    // 3. STRATEGI WARNA (Habiskan warna terbanyak)
-                    if (cardA.color === bestColor) scoreA += 3;
-                    if (cardB.color === bestColor) scoreB += 3;
+                        // 2. STRATEGI WARNA (Dominasi Warna)
+                        if (card.color === bestColor) score += 20;
 
-                    // 4. SIMPAN WILD (Kecuali terdesak atau bisa menang)
-                    if (cardA.color === 'HITAM') scoreA -= 5;
-                    if (cardB.color === 'HITAM') scoreB -= 5;
+                        // 3. HEMAT KARTU SPESIAL (Kecuali Terdesak)
+                        if (card.color === 'HITAM') {
+                            if (playerCardCount > 4) score -= 15;
+                            else score += 40;
+                        }
 
-                    // 5. PREFERENSI WARNA SAMA (Lebih aman daripada angka sama)
-                    if (cardA.color === currentActiveColor) scoreA += 1;
-                    if (cardB.color === currentActiveColor) scoreB += 1;
+                        // 4. HINDARI BLUNDER +4 (Cek Legalitas agar tidak kena challenge)
+                        const hasMatchingColor = botHand.some(c => c.color === currentColor);
+                        if (card.value === 'draw4' && hasMatchingColor) {
+                            score -= 500;
+                        }
 
-                    return scoreB - scoreA;
+                        // 5. BUANG KARTU POIN TINGGI (Action Cards)
+                        if (['skip', 'reverse', 'draw2'].includes(card.value) && card.color !== 'HITAM') {
+                            score += 10;
+                        }
+
+                        return score;
+                    };
+
+                    return calculateScore(cardB) - calculateScore(cardA);
                 });
 
-                // Sedikit variasi agar tidak 100% robot (10% peluang pilih opsi ke-2 terbaik)
-                let selectedMove = validMoves[0];
-                if (validMoves.length > 1 && Math.random() < 0.1) {
-                    selectedMove = validMoves[1];
-                }
-
-                executeMove('bot', selectedMove.index);
+                // Hapus logika "mistake" agar AI lebih konsisten dan pintar (Medium = Competent)
+                executeMove('bot', validMoves[0].index);
             } else {
                 showToast("COMPUTER AMBIL KARTU", 'info');
                 await drawCards('bot', 1);
@@ -1583,7 +1589,7 @@
                 const newCard = botHand[newCardIdx];
 
                 if (isValidMove(newCard)) {
-                    await sleep(1000); // Delay reaksi
+                    await sleep(800); // Delay reaksi lebih cepat
                     executeMove('bot', newCardIdx);
                 } else {
                     isPlayerTurn = true;
